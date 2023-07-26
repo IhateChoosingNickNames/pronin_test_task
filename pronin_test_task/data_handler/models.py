@@ -20,6 +20,14 @@ class Client(models.Model):
     def __str__(self):
         return self.username[:30]
 
+    def get_gems(self, client_ids):
+        """Фильтрация камней текущего пользователя по их наличию у других."""
+        gems_ids = [
+            elem.gem_id
+            for elem in ClientGem.objects.filter(client_id__in=client_ids)
+        ]
+        return self.gems.filter(id__in=gems_ids).distinct()
+
 
 class Gem(models.Model):
     """Модель камней."""
@@ -57,11 +65,3 @@ class ClientGem(models.Model):
         verbose_name=_("Дата сделки"),
         db_index=True,
     )
-
-    def get_gems(self, client_ids):
-        """Фильтрация камней текущего пользователя по их наличию у других."""
-        gems_ids = [
-            elem.gem_id
-            for elem in ClientGem.objects.filter(client_id__in=client_ids)
-        ]
-        return self.client.gems.filter(id__in=gems_ids).distinct()

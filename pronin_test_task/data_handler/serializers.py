@@ -14,7 +14,6 @@ class GemsSerializer(serializers.ModelSerializer):
 class DataSerializer(serializers.ModelSerializer):
     """Сериалиазатор для вывода информации о пользователе."""
 
-    username = serializers.CharField(source="client.username")
     spent_money = serializers.SerializerMethodField()
     gems = serializers.SerializerMethodField()
 
@@ -28,8 +27,8 @@ class DataSerializer(serializers.ModelSerializer):
 
     def get_gems(self, obj):
         client_ids = [
-            client.client_id
+            client.id
             for client in self.initial_data
-            if client.client_id != obj.client_id
+            if client.id != obj.id
         ]
         return GemsSerializer(obj.get_gems(client_ids), many=True).data
