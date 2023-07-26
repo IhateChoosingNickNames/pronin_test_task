@@ -10,6 +10,6 @@ COPY . .
 
 LABEL author='Larkin Michael'
 
-RUN python manage.py migrate
+RUN chmod +x docker-entrypoint.sh
 
-CMD ["gunicorn", "root.wsgi:application", "--bind", "0.0.0.0:8000"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
