@@ -4,7 +4,7 @@ import io
 from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
-from .models import Client, ClientGem, Gem
+from .services import save_data_to_db
 
 
 def valid_data(data):
@@ -27,22 +27,11 @@ def validate_headers(headers):
 def parse_csv_file(decoded_file):
     """Парсиннг CSV-файла в словарь."""
     io_string = io.StringIO(decoded_file)
-    headers = list(map(str.strip, io_string.readline().split(settings.DELIMITER)))
+    headers = list(
+        map(str.strip, io_string.readline().split(settings.DELIMITER))
+    )
     validate_headers(headers)
     parsed_data = csv.DictReader(io_string, fieldnames=headers)
     for new_deal in parsed_data:
-        save_data_to_db(new_deal)
-
-
-def save_data_to_db(data):
-    """Сохранение записи в БД."""
-    if valid_data(data):
-        client, _ = Client.objects.get_or_create(username=data["customer"])
-        gem, _ = Gem.objects.get_or_create(name=data["item"])
-        ClientGem.objects.create(
-            client=client,
-            gem=gem,
-            quantity=data["quantity"],
-            costs=data["total"],
-            deal_date=data["date"],
-        )
+        if valid_data(new_deal):
+            save_data_to_db(new_deal)

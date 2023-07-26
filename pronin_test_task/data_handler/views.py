@@ -1,13 +1,12 @@
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import Sum
 from django.views.decorators.cache import cache_page
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import ClientGem
 from .serializers import DataSerializer
+from .services import get_clients
 from .utils import parse_csv_file
 
 
@@ -15,12 +14,7 @@ from .utils import parse_csv_file
 @api_view(["GET"])
 def get_data(request):
     """Получение данных."""
-    clients = (
-        ClientGem.objects.select_related("client", "gem")
-        .annotate(spent_money=Sum("costs"))
-        .order_by("-spent_money")[:5]
-        # .filter(deal_date__gt=)  # Если нужна будет фильтрация по времени
-    )
+    clients = get_clients()
     serializer = DataSerializer(
         many=True,
         data=list(clients),

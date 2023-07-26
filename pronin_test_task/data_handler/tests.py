@@ -128,12 +128,12 @@ class AccountTests(APITestCase):
     def test_correct_output(self):
         get_url = self.__ENDPOINTS["get-data"]["url"]
         target_client_amount = 5
-        target_users = [
-            "resplendent",
-            "braggadocio",
-            "kismetkings213",
-            "resplendent",
-            "bellwether",
+        target_data = [
+            ("resplendent", 8502),
+            ("bellwether", 5253),
+            ("concoction", 2635),
+            ("nambypamby", 1185),
+            ("buckaroo", 342),
         ]
         self.__prepare_data()
 
@@ -154,13 +154,14 @@ class AccountTests(APITestCase):
         self.assertIn("spent_money", first_element)
         self.assertIn("gems", first_element)
 
-        response_users = [
-            elem["username"] for elem in response.data["response"]
+        response_data = [
+            (elem["username"], int(elem["spent_money"]))
+            for elem in response.data["response"]
         ]
 
         self.assertEqual(
-            target_users,
-            response_users,
+            target_data,
+            response_data,
             "Проверьте, что вы корректно возвращаете пользвоателей",
         )
 
