@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,9 +18,7 @@ ALLOWED_HOSTS = (
     os.getenv("LOCALHOST"),
     os.getenv("CONTAINER_NAME"),
 )
-INTERNAL_IPS = (
-    os.getenv("LOCALHOST_IP"),
-)
+INTERNAL_IPS = (os.getenv("LOCALHOST_IP"),)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -88,9 +87,16 @@ DATABASES = {
         "HOST": os.getenv("DB_HOST", default="db"),
         "PORT": os.getenv("DB_PORT", default="5432"),
         "ATOMIC_REQUESTS": True,
-    }
+    },
+    "test": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    },
 }
 
+
+if "test" in sys.argv:
+    DATABASES["default"] = DATABASES["test"]
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -132,5 +138,12 @@ REST_FRAMEWORK = {
 }
 
 CACHE_TIMEOUT = 2 * 60 * 60  # 2 часа
-DATA_FIELDS = ("customer", "item", "total", "quantity", "date")
+DATA_FIELDS = (
+    "customer",
+    "item",
+    "total",
+    "quantity",
+    "date",
+)
 DELIMITER = ","
+CLIENT_LIMIT = 5

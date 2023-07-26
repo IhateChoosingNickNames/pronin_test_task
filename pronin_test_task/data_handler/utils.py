@@ -2,8 +2,8 @@ import csv
 import io
 
 from django.conf import settings
-from rest_framework.exceptions import ValidationError
 
+from .exceptions import IncorrectFileError
 from .services import save_data_to_db
 
 
@@ -20,8 +20,9 @@ def valid_data(data):
 
 
 def validate_headers(headers):
+    """Проверка соответствия ключей нужному шаблону."""
     if sorted(settings.DATA_FIELDS) != sorted(headers):
-        raise ValidationError("Файл не соответствует нужному формату.")
+        raise IncorrectFileError("Файл не соответствует нужному формату.")
 
 
 def parse_csv_file(decoded_file):

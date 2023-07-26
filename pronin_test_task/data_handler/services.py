@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models import Sum
 
 from .models import Client, ClientGem, Gem
@@ -17,6 +18,7 @@ def save_data_to_db(data):
 
 
 def get_clients():
+    """Получение требуемых клиентов."""
     # Корректный сырой запрос
     # return ClientGem.objects.raw(
     #     'SELECT "data_handler_clientgem".id, sum(costs) as spent_money '
@@ -31,7 +33,7 @@ def get_clients():
     clientgems = (
         ClientGem.objects.values("client_id")
         .annotate(spent_money=Sum("costs"))
-        .order_by("-spent_money")[:5]
+        .order_by("-spent_money")[: settings.CLIENT_LIMIT]
         # .filter(deal_date__gt=)  # Если нужна будет фильтрация по времени
     )
     result = []

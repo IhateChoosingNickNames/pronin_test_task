@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from .exceptions import IncorrectFileError
 from .serializers import DataSerializer
 from .services import get_clients
 from .utils import parse_csv_file
@@ -31,6 +32,24 @@ def add_data(request):
         file = request.data["deals"]
         decoded_file = file.read().decode()
         parse_csv_file(decoded_file)
+    except KeyError:
+        return Response(
+            {
+                "status": "error",
+                "Desc": "Файл нужно передавать по ключу deals",
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    except AttributeError:
+        return Response(
+            {"status": "error", "Desc": "Файл не был передан"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    except IncorrectFileError as e:
+        return Response(
+            {"status": "error", "Desc": e.args[0]},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     except Exception as e:
         return Response(
             {"status": "error", "Desc": str(e)},

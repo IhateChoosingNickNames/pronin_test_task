@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.cache import cache
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -16,6 +17,17 @@ class AccountTests(APITestCase):
             "allowed_methods": ("POST",),
         },
     }
+
+    def __prepare_data(self):
+        correct_csv = "data_for_tests/correct_data.csv"
+        post_url = self.__ENDPOINTS["add-data"]["url"]
+        with open(correct_csv, encoding="utf-8") as file:
+            response = self.client.post(post_url, data={"deals": file})
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+            "Проверьте корректность обработки CSV файлов.",
+        )
 
     def test_urls_allowed_methods(self):
         __methods = (
@@ -47,19 +59,11 @@ class AccountTests(APITestCase):
             self.assertEqual(response.data["status"], "error")
 
     def test_correct_csv_file(self):
-        url = self.__ENDPOINTS["add-data"]["url"]
-        correct_csv = "data_for_tests/correct_data.csv"
         client_count_prev = Client.objects.count()
-
         self.assertEqual(client_count_prev, 0)
 
-        with open(correct_csv, encoding="utf-8") as file:
-            response = self.client.post(url, data={"deals": file})
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK,
-            "Проверьте корректность обработки валидных файлов",
-        )
+        self.__prepare_data()
+
         self.assertNotEqual(
             client_count_prev,
             Client.objects.count(),
@@ -114,20 +118,9 @@ class AccountTests(APITestCase):
             ),
         )
 
-    def __prepare_data(self):
-        correct_csv = "data_for_tests/correct_data.csv"
-        post_url = self.__ENDPOINTS["add-data"]["url"]
-        with open(correct_csv, encoding="utf-8") as file:
-            response = self.client.post(post_url, data={"deals": file})
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK,
-            "Проверьте корректность обработки CSV файлов.",
-        )
-
     def test_correct_output(self):
         get_url = self.__ENDPOINTS["get-data"]["url"]
-        target_client_amount = 5
+
         target_data = [
             ("resplendent", 8502),
             ("bellwether", 5253),
@@ -145,8 +138,8 @@ class AccountTests(APITestCase):
         )
         self.assertEqual(
             len(response.data["response"]),
-            target_client_amount,
-            f"Проверьте, что в выдаче {target_client_amount} элементов",
+            settings.CLIENT_LIMIT,
+            f"Проверьте, что в выдаче {settings.CLIENT_LIMIT} элементов",
         )
 
         first_element = response.data["response"][0]
@@ -171,9 +164,8 @@ class AccountTests(APITestCase):
         get_url = self.__ENDPOINTS["get-data"]["url"]
         response = self.client.get(get_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        target_client_amount = 5
         self.assertIn("response", response.data)
-        self.assertEqual(len(response.data["response"]), target_client_amount)
+        self.assertEqual(len(response.data["response"]), settings.CLIENT_LIMIT)
 
         first_element = response.data["response"][0]
         previous_spent_money = first_element["spent_money"]
