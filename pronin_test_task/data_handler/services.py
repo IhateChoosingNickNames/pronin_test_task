@@ -4,17 +4,76 @@ from django.db.models import Sum
 from .models import Client, ClientGem, Gem
 
 
+def get_objects(model, field, initial_data):
+    result_data = initial_data.copy()
+    filter_data = {f"{field}__in": initial_data.keys()}
+    objs = model.objects.filter(**filter_data)
+
+    for obj in objs:
+        result_data[getattr(obj, field)] = obj
+
+    bulks = [
+        model(**{field: name})
+        for name, db_obj in result_data.items()
+        if db_obj is None
+    ]
+
+    for obj in model.objects.bulk_create(bulks):
+        result_data[getattr(obj, field)] = obj
+
+    return result_data
+
+
 def save_data_to_db(data):
     """Сохранение записи в БД."""
-    client, _ = Client.objects.get_or_create(username=data["customer"])
-    gem, _ = Gem.objects.get_or_create(name=data["item"])
-    ClientGem.objects.create(
-        client=client,
-        gem=gem,
-        quantity=data["quantity"],
-        costs=data["total"],
-        deal_date=data["date"],
-    )
+    client_usernames, gem_names, deals = {}, {}, []
+
+    for s in data:
+        client_usernames[s["customer"]] = None
+        gem_names[s["item"]] = None
+
+    clients = get_objects(Client, "username", client_usernames)
+    gems = get_objects(Gem, "name", gem_names)
+
+    for new_deal in data:
+        client = clients[new_deal["customer"]]
+        gem = gems[new_deal["item"]]
+
+        deals.append(
+            ClientGem(
+                client=client,
+                gem=gem,
+                quantity=new_deal["quantity"],
+                costs=new_deal["total"],
+                deal_date=new_deal["date"],
+            )
+        )
+
+    ClientGem.objects.bulk_create(deals)
+
+    # clients, gems, deals = {}, {}, []
+    # client_usernames = []
+    # gem_names = []
+    # for s in data:
+    #     client_usernames.append(s["customer"])
+    #     gem_names.append(s["item"])
+    #
+    # for new_deal in data:
+    #     client = __get_obj(Client, new_deal["customer"], clients)
+    #     gem = __get_obj(Gem, new_deal["item"], gems)
+    #
+    #     deals.append(
+    #         ClientGem(
+    #             client=client,
+    #             gem=gem,
+    #             quantity=new_deal["quantity"],
+    #             costs=new_deal["total"],
+    #             deal_date=new_deal["date"],
+    #         )
+    #     )
+    # Client.objects.bulk_create(clients.values())
+    # Gem.objects.bulk_create(gems.values())
+    # ClientGem.objects.bulk_create(deals)
 
 
 def get_clients():

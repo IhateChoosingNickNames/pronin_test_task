@@ -33,6 +33,6 @@ def parse_csv_file(decoded_file):
     )
     validate_headers(headers)
     parsed_data = csv.DictReader(io_string, fieldnames=headers)
-    for new_deal in parsed_data:
-        if valid_data(new_deal):
-            save_data_to_db(new_deal)
+    result = [new_deal for new_deal in parsed_data if valid_data(new_deal)]
+    if result:
+        save_data_to_db(result)
