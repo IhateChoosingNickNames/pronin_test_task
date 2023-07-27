@@ -4,7 +4,8 @@ from django.db.models import Sum
 from .models import Client, ClientGem, Gem
 
 
-def get_objects(model, field, initial_data):
+def __get_objects(model, field, initial_data):
+    """Создание всех недостающих пользователей."""
     result_data = initial_data.copy()
     filter_data = {f"{field}__in": initial_data.keys()}
     objs = model.objects.filter(**filter_data)
@@ -32,8 +33,8 @@ def save_data_to_db(data):
         client_usernames[s["customer"]] = None
         gem_names[s["item"]] = None
 
-    clients = get_objects(Client, "username", client_usernames)
-    gems = get_objects(Gem, "name", gem_names)
+    clients = __get_objects(Client, "username", client_usernames)
+    gems = __get_objects(Gem, "name", gem_names)
 
     for new_deal in data:
         client = clients[new_deal["customer"]]
@@ -50,30 +51,6 @@ def save_data_to_db(data):
         )
 
     ClientGem.objects.bulk_create(deals)
-
-    # clients, gems, deals = {}, {}, []
-    # client_usernames = []
-    # gem_names = []
-    # for s in data:
-    #     client_usernames.append(s["customer"])
-    #     gem_names.append(s["item"])
-    #
-    # for new_deal in data:
-    #     client = __get_obj(Client, new_deal["customer"], clients)
-    #     gem = __get_obj(Gem, new_deal["item"], gems)
-    #
-    #     deals.append(
-    #         ClientGem(
-    #             client=client,
-    #             gem=gem,
-    #             quantity=new_deal["quantity"],
-    #             costs=new_deal["total"],
-    #             deal_date=new_deal["date"],
-    #         )
-    #     )
-    # Client.objects.bulk_create(clients.values())
-    # Gem.objects.bulk_create(gems.values())
-    # ClientGem.objects.bulk_create(deals)
 
 
 def get_clients():
