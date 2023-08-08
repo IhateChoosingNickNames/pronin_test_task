@@ -66,6 +66,10 @@ def get_clients():
     #     'LIMIT 5'
     # )
 
+    # Аннотирование через клиента
+    # result = Client.objects.annotate(spent_money=Sum("client_gem__costs")).order_by("-spent_money")[:5]
+
+
     clientgems = (
         ClientGem.objects.values("client_id")
         .annotate(spent_money=Sum("costs"))

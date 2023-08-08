@@ -15,6 +15,7 @@ Used technologies:
     - PostgreSQL 13.0
     - Docker 20.10.22
     - Poetry 1.4.0
+    - Requests 2.31.0
 
 # Launch instructions:
 
@@ -47,6 +48,7 @@ Examples requests:
 -
     - GET your_url/api/v1/get-data/
     - POST your_url/api/v1/add-data/
+    - POST your_url/api/v1/check-delivery-cost/
 
 Examples of responses:
 -
@@ -73,6 +75,23 @@ Examples of responses:
     "status": "error",
     "Desc": "[ErrorDetail(string='Файл не соответствует нужному формату.', code='invalid')]"
     }
+
+    - POST {
+    "SDEK_DATA": [
+        {
+            "tariff": "Экспресс дверь-дверь",
+            "price": 4060.0
+        },
+        {
+            "tariff": "Экспресс дверь-склад",
+            "price": 3900.0
+        },
+    ],
+    "POCHTA_RF_DATA": {
+        "tariff": "Посылка",
+        "price": 2259.78
+    }
+}
 
 ### Project author:
 

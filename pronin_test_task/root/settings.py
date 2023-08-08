@@ -33,6 +33,7 @@ INSTALLED_APPS = [
 
     # Приложения
     "data_handler.apps.DataHandlerConfig",
+    "delivery.apps.DeliveryConfig",
 ]
 
 MIDDLEWARE = [
@@ -147,3 +148,23 @@ DATA_FIELDS = (
 )
 DELIMITER = ","
 CLIENT_LIMIT = 5
+
+# Тестовые данные SDEK
+# При использовании в реальном проекте необходимо заменить на боевые данные
+SDEK_CALCULATOR_URL = "https://api.edu.cdek.ru/v2/calculator/tarifflist"
+SDEK_USER_REGISTER_URL = "https://api.edu.cdek.ru/v2/oauth/token?parameter"
+SDEK_CITIES_URL = "https://api.cdek.ru/v2/location/cities/"
+SDEK_TEST_USER_DATA = {
+    "grant_type": "client_credentials",
+    "client_id": "EMscd6r9JnFiQ3bLoyjJY6eM78JrJceI",
+    "client_secret": "PjLZkKBHEiLK3YsjtNrt3TGNG0ahs3kG",
+}
+# Калькулятор SDEK позволяет получить стомость доставки для всех доступных
+# тарифов.
+TARIFF_COUNT = 5
+SDEK_CURRENCY = 1
+SDEK_LANG = "rus"
+
+# Почта РФ
+POCHTA_RF_CALCULATOR_URL = "https://delivery.pochta.ru/v2/calculate/tariff?json&object=4030"
+MONEY_KOEF = 100  # Перевод копеек в рубли
