@@ -19,7 +19,7 @@ class AccountTests(APITestCase):
     }
 
     def __prepare_data(self):
-        correct_csv = "data_for_tests/correct_data.csv"
+        correct_csv = "data_for_tests/data_handler/correct_data.csv"
         post_url = self.__ENDPOINTS["add-data"]["url"]
         with open(correct_csv, encoding="utf-8") as file:
             response = self.client.post(post_url, data={"deals": file})
@@ -72,7 +72,7 @@ class AccountTests(APITestCase):
 
     def test_csv_with_wrong_headers(self):
         url = self.__ENDPOINTS["add-data"]["url"]
-        wrong_headers_csv = "data_for_tests/wrong_headers.csv"
+        wrong_headers_csv = "data_for_tests/data_handler/wrong_headers.csv"
         client_count_prev = Client.objects.count()
         self.assertEqual(client_count_prev, 0)
 
@@ -100,7 +100,7 @@ class AccountTests(APITestCase):
 
     def test_csv_with_wrong_body(self):
         url = self.__ENDPOINTS["add-data"]["url"]
-        wrong_body_csv = "data_for_tests/wrong_body.csv"
+        wrong_body_csv = "data_for_tests/data_handler/wrong_body.csv"
         client_count_prev = Client.objects.count()
         self.assertEqual(client_count_prev, 0)
         target_increment = 1

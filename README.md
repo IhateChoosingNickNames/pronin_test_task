@@ -47,8 +47,21 @@ If you'll need any *manage.py* commands then you'll want to use prefix:
 Examples requests:
 -
     - GET your_url/api/v1/get-data/
+
     - POST your_url/api/v1/add-data/
+```json
+{
+  "deals": some_file.csv
+}
+```
     - POST your_url/api/v1/check-delivery-cost/
+```json
+{
+    "sending_city_postal_code": 117209,
+    "receiving_city_postal_code": 630000,
+    "weight": 17000
+}
+```
 
 Examples of responses:
 -
@@ -90,8 +103,8 @@ Examples of responses:
     "POCHTA_RF_DATA": {
         "tariff": "Посылка",
         "price": 2259.78
+        }
     }
-}
 
 ### Project author:
 

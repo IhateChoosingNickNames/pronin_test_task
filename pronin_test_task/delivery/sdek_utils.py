@@ -3,7 +3,7 @@ import json
 from django.conf import settings
 
 from .services import _send_request
-from .validators import _validate_keys, _validate_instance
+from .validators import _validate_instance, _validate_keys
 
 
 def _get_city_code(postal_code, headers):

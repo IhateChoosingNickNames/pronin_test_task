@@ -5,7 +5,10 @@ def _validate_keys(response, *keys):
     """Проверка наличия всех нужных ключей в ответе."""
     for key in keys:
         if key not in response:
-            raise ValidationError(f"В ответе отсутствует ключ {key}")
+            raise ValidationError(
+                f"В ответе отсутствует ключ {key}"
+                f"{response['errors']}"
+            )
 
 
 def _validate_instance(response, type_):
