@@ -4,7 +4,7 @@ Test task for Pronin
 
 ### Project description:
 
-Web application for recieving, parsing data in CSV-format.
+Web application for recieving, parsing data in CSV-format, and calculating delivery costs.
 
 Used technologies:
 -
